@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <p>First Name <strong data-bind="text: firstName"></strong></p>
+    <p>Last Name <strong data-bind="text: lastName"></strong></p>
+    <p>Change First Name <input data-bind="value: firstName, valueUpdate: 'afterkeydown'" type="text" name="firstName"></p>
+    <p>Change Last Name <input data-bind="value: lastName, valueUpdate: 'afterkeydown'", type="text" name="lastName"></p>
+    <p>Full Name: <strong data-bind="text: fullName"></strong></p>
+    <p>Add new hobby: <input data-bind="value: hobby, valueUpdate: 'afterkeydown'" type="text" name="hobby"><button data-bind="click: addHobby">Add</button></p>
+    <p>Hobby to possibly be added: <strong data-bind="text: hobby"></strong></p>
+    <ul data-bind="foreach: hobbies">
+      <div>
+        <li data-bind="text: $data"></li>
+        <button data-bind="click: $parent.removeHobby">Remove Hobby</button>
+      </div>
+    </ul>
+<!--     <p>Total Number of Properties: <strong data-bind="visible: numberOfHobbies() > 2"><span data-bind="text: numberOfHobbies().toFixed()"></span></strong></p> -->
+    <p>Total Number of Properties: <strong data-bind="makeDecimal: numberOfHobbies"></strong></p>
+    <script type="text/javascript" src="./knockout.js"></script>
+    <script type="text/javascript">
+      ko.bindingHandlers.makeDecimal = {
+        update: function (element, valueAccessor) {
+          var numberOfHobbies = ko.unwrap(valueAccessor());;
+          console.log("Number of Hobbies", numberOfHobbies);
+          var formattedText = "$" + numberOfHobbies.toFixed();
+          element.innerText = formattedText;
+        }
+      };
+
+      function IndexViewModel() {
+        var self = this;
+        self.firstName = ko.observable("Govind");
+        self.lastName = ko.observable("Rai");
+        self.hobby = ko.observable();
+        self.hobbies = ko.observableArray(["Videogames", "Web Development", "Drake"]);
+        self.addHobby = function() {
+          self.hobbies.push(self.hobby());
+        };
+        self.removeHobby = function(hobby) {
+          self.hobbies.remove(hobby);
+        };
+
+        self.fullName = ko.computed(function() {
+          return self.firstName() + " " + self.lastName();
+        });
+
+        self.numberOfHobbies = ko.computed(function() {
+          return self.hobbies().length;
+        });
+
+      }
+
+      ko.applyBindings(new IndexViewModel());
+    </script>
+  </body>
+</html>
